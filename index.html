@@ -1,0 +1,74 @@
+<!-- Mesma estrutura de antes, só trechos relevantes abaixo -->
+
+<script>
+  function calcular() {
+    const idade = document.getElementById('idade').value;
+    const pcd = document.getElementById('pcd').value;
+    const qualificacao = document.getElementById('qualificacao').value;
+    const diasUteis = parseInt(document.getElementById('diasUteis').value || 0);
+    const diasPonto = parseInt(document.getElementById('diasPonto').value || 0);
+    const qtdGratuitas = parseInt(document.getElementById('qtdCotasGratuitas').value || 0);
+    const qtdPagas = parseInt(document.getElementById('qtdCotasPagas').value || 0);
+    const valorGratuita = parseFloat(document.getElementById('valorCotaGratuita').value || 0);
+    const valorPaga = parseFloat(document.getElementById('valorCotaPaga').value || 0);
+    const antecipacao = parseFloat(document.getElementById('valorAntecipacao').value || 0);
+    const descontoDiversos = parseFloat(document.getElementById('descontoDiversos').value || 0);
+
+    const vencimentoBase = 2618.80;
+    const gaj = 7237.29;
+    const somaBase = vencimentoBase + gaj;
+
+    let adicional = 0;
+    if (qualificacao === 'pos') adicional = somaBase * 0.075;
+    if (qualificacao === 'mestrado') adicional = somaBase * 0.10;
+    if (qualificacao === 'doutorado') adicional = somaBase * 0.125;
+
+    const previdencia = (vencimentoBase + gaj + adicional) * 0.1062913423;
+    const ir = (vencimentoBase + gaj + adicional) * 0.154755278;
+
+    const auxSaudeTabela = {
+      "18-19": 718.00,
+      "20-29": 746.72,
+      "30-39": 761.08,
+      "40-49": 821.39,
+      "50-59": 1271.00,
+      "60+": 1404.58
+    };
+    const auxSaude = auxSaudeTabela[idade];
+    const acrescimoSaude = pcd === 'sim' ? auxSaude * 0.5 : 0;
+
+    const auxAlimentacao = diasUteis * 80;
+    const auxTransporte = diasUteis * 14;
+    const descontoTransporte = diasPonto * 14;
+
+    const totalBruto = vencimentoBase + gaj + adicional + auxSaude + acrescimoSaude + auxAlimentacao + auxTransporte;
+    const totalLiquido = totalBruto - previdencia - ir - descontoTransporte - descontoDiversos;
+
+    const cotasGratuitas = qtdGratuitas * valorGratuita;
+    const cotasPagas = qtdPagas * valorPaga;
+
+    const totalFinal = totalLiquido + cotasGratuitas + cotasPagas + antecipacao;
+
+    document.getElementById('result').innerHTML = `
+      <p><strong>Vencimento Base:</strong> R$ ${vencimentoBase.toFixed(2)}</p>
+      <p><strong>GAJ:</strong> R$ ${gaj.toFixed(2)}</p>
+      <p><strong>Adicional Qualificação:</strong> R$ ${adicional.toFixed(2)}</p>
+      <p><strong>Desconto Previdência:</strong> R$ ${previdencia.toFixed(2)}</p>
+      <p><strong>Desconto IR:</strong> R$ ${ir.toFixed(2)}</p>
+      <p><strong>Auxílio Saúde:</strong> R$ ${auxSaude.toFixed(2)}</p>
+      <p><strong>Acréscimo Aux. Saúde (PcD):</strong> R$ ${acrescimoSaude.toFixed(2)}</p>
+      <p><strong>Auxílio Alimentação:</strong> R$ ${auxAlimentacao.toFixed(2)}</p>
+      <p><strong>Auxílio Transporte:</strong> R$ ${auxTransporte.toFixed(2)}</p>
+      <p><strong>Desconto Transporte:</strong> R$ ${descontoTransporte.toFixed(2)}</p>
+      <p><strong>Descontos Diversos:</strong> R$ ${descontoDiversos.toFixed(2)}</p>
+      <hr>
+      <p><strong>Total Bruto:</strong> R$ ${totalBruto.toFixed(2)}</p>
+      <p><strong>Total Líquido:</strong> R$ ${totalLiquido.toFixed(2)}</p>
+      <p><strong>Cotas Gratuitas:</strong> R$ ${cotasGratuitas.toFixed(2)}</p>
+      <p><strong>Cotas Pagas:</strong> R$ ${cotasPagas.toFixed(2)}</p>
+      <p><strong>Antecipação:</strong> R$ ${antecipacao.toFixed(2)}</p>
+      <hr>
+      <p><strong>Total Líquido + Diligências:</strong> R$ ${totalFinal.toFixed(2)}</p>
+    `;
+  }
+</script>
